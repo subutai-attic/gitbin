@@ -8,6 +8,7 @@
 #include "Plugin.h"
 
 using Poco::Process;
+using Poco::ProcessHandle;
 using Poco::Pipe;
 using Poco::PipeOutputStream;
 using Poco::PipeInputStream;
