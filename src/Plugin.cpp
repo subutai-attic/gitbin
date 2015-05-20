@@ -409,6 +409,20 @@ void Plugin::handleInit(const std::string& name, const std::string& value)
         logger().error("This repo already has keshig configuration");
         return;
     }
+    URI uri(value);
+    if (uri.getScheme() == "ssh")
+    {
+        std::cout << "Initializing SSH storage" << std::endl;
+    } 
+    else if (uri.getScheme() == "s3")
+    {
+        std::cout << "Initializing S3 storage" << std::endl;
+    } 
+    else
+    {
+        std::cout << uri.getScheme().c_str() << " is unsupported URL." << std::endl;
+        return;
+    }
     f.createFile();
     AutoPtr<PropertyFileConfiguration> config = new PropertyFileConfiguration(); 
     config->setString("url", value);  

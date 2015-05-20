@@ -49,6 +49,7 @@
 #include <Poco/UUID.h>
 #include <Poco/UUIDGenerator.h>
 #include <Poco/FileStream.h>
+#include <Poco/URI.h>
 
 using Poco::trim;
 using Poco::Util::ServerApplication;
@@ -82,6 +83,7 @@ using Poco::UUID;
 using Poco::UUIDGenerator;
 using Poco::FileInputStream;
 using Poco::FileOutputStream;
+using Poco::URI;
 
 struct IndexEntry
 {
