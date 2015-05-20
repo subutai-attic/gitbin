@@ -20,10 +20,10 @@
 const std::string Plugin::GIT_DIR       = ".git";
 const std::string Plugin::GIT_CONFIG    = ".git/keshig";
 const std::string Plugin::GIT_CACHE_DIR = ".git/bin-cache";
-const std::string Plugin::GIT_BIN_INDEX = ".git/bin-index";
+const std::string Plugin::GIT_BIN_INDEX = ".git-bin";
 const std::string Plugin::SEPARATOR = "<--->";
 
-Plugin::Plugin() : _terminate(false)
+Plugin::Plugin() : _terminate(false), _action(HELP)
 {
 
 }
@@ -142,6 +142,45 @@ void Plugin::addFile(const std::string filepath)
     while (!isUuidUnique(e.uuid));
     _index.push_back(e);
     writeIndex();
+
+    // Place two copies of this file into cache
+    // One copy is original file and don't tracked in any way
+    // Second copy is a file we will create link to
+    
+    Process::Args args;
+    args.push_back(filepath);
+    // TODO: Fix filepath
+    args.push_back(e.uuid);
+    Poco::ProcessHandle copyProcess = Process::launch("cp", args, 0, 0, 0);
+    if (copyProcess.wait() != 0)
+    {
+        std::cout << "Failed to move file into git-bin cache" << std::endl;
+        return;
+    }
+    // Second stage copy
+    args.clear();
+    args.push_back(filepath);
+    // TODO: Fix filepath
+    args.push_back(e.uuid);
+    copyProcess = Process::launch("mv", args, 0, 0, 0);
+    if (copyProcess.wait() != 0)
+    {
+        std::cout << "Failed to move file on stage 2" << std::endl;
+        return;
+    }
+
+    // Make a link
+    args.clear();
+    args.push_back("-s");
+    args.push_back(filepath);
+    // TODO: Fix filepath
+    args.push_back(e.uuid);
+    Poco::ProcessHandle linkProcess = Process::launch("ln", args, 0, 0, 0); 
+    if (linkProcess.wait() != 0)
+    {
+        std::cout << "Failed to create link to file" << std::endl;
+        return;
+    }
 }
 
 void Plugin::writeIndex()

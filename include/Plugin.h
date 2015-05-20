@@ -11,7 +11,6 @@
  *       Compiler:  gcc
  *
  *         Author:  Mikhail Savochkin (msavochkin@critical-factor.com), 
- *   Organization:  Optimal Dynamics LLC
  *
  * =====================================================================================
  */
@@ -91,6 +90,16 @@ struct IndexEntry
     std::string uuid;
 };
 
+typedef enum
+{
+    ADD,
+    DELETE,
+    LIST,
+    CHECK,
+    INIT,
+    HELP
+} GitAction;
+
 class Plugin : public ServerApplication
 {
     public:
@@ -138,7 +147,6 @@ class Plugin : public ServerApplication
         void writeIndex();
         bool isUuidUnique(const std::string uuid);
         std::string getFileMd5(const std::string filepath) const;
-
     private:
         std::vector<IndexEntry> _index;
         bool _terminate;
@@ -146,6 +154,7 @@ class Plugin : public ServerApplication
         std::string _type;
         std::string _url;
             // Path to a storage
+        GitAction _action;
 };
 
 #endif
