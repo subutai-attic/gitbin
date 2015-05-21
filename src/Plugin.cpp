@@ -491,7 +491,19 @@ void Plugin::handleInit(const std::string& name, const std::string& value)
 
 void Plugin::handleSync(const std::string& name, const std::string& value)
 {
-    
+    AutoPtr<PropertyFileConfiguration> config = new PropertyFileConfiguration(Plugin::GIT_CONFIG);
+    std::string targetUrl = config->getString("url");
+    URI uri(targetUrl);
+    FileTransfer* ft;
+    if (uri.getScheme() == "ssh")
+    {
+        ft = new FileTransfer();
+    } 
+    else if (uri.getScheme() == "s3")
+    {
+        ft = new S3FileTransfer();
+    }
+    ft->setTargetUrl(targetUrl);
 }
 
 int Plugin::main(const std::vector<std::string>& args)

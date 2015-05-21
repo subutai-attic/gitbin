@@ -18,8 +18,11 @@ class FileTransfer
     public:
         FileTransfer();
         virtual ~FileTransfer();
-        virtual void uploadFile(const std::string uuid);
-        virtual void downloadFile(const std::string uuid);
+        virtual void uploadFile(const std::string filepath);
+        virtual void downloadFile(const std::string filepath);
+        virtual void setTargetUrl(const std::string targetUrl);
+    protected:
+        std::string _targetUrl;
 };
 
 #endif

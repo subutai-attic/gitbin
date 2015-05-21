@@ -51,6 +51,9 @@
 #include <Poco/FileStream.h>
 #include <Poco/URI.h>
 
+#include "FileTransfer.h"
+#include "S3FileTransfer.h"
+
 using Poco::trim;
 using Poco::Util::ServerApplication;
 using Poco::Util::Application;

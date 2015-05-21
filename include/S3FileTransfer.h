@@ -8,8 +8,8 @@ class S3FileTransfer : public FileTransfer
     public:
         S3FileTransfer();
         ~S3FileTransfer();
-        void uploadFile(const std::string uuid);
-        void downloadFile(const std::string uuid);
+        void uploadFile(const std::string filepath);
+        void downloadFile(const std::string filepath);
 };
 
 #endif
