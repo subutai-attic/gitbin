@@ -21,7 +21,7 @@ const std::string Plugin::GIT_DIR       = ".git";
 const std::string Plugin::GIT_CONFIG    = ".git/keshig";
 const std::string Plugin::GIT_CACHE_DIR = ".git/bin-cache";
 const std::string Plugin::GIT_BIN_INDEX = ".git-bin";
-const std::string Plugin::SEPARATOR = "<--->";
+const std::string Plugin::SEPARATOR = "|";
 
 Plugin::Plugin() : _terminate(false), _action(HELP)
 {
@@ -87,6 +87,13 @@ void Plugin::defineOptions(OptionSet& options)
             .repeatable(false)
             .callback(OptionCallback<Plugin>(
                     this, &Plugin::handleCheck)));
+
+    options.addOption(
+            Option("status", "s", "display status of files that is tracket by git-bin")
+            .required(false)
+            .repeatable(false)
+            .callback(OptionCallback<Plugin>(
+                    this, &Plugin::handleStatus)));
     
     options.addOption(
             Option("list", "l", "lists all files that is tracked by keshig")
@@ -127,6 +134,12 @@ void Plugin::addFile(const std::string filepath)
     // Find this file in the index
     if (isFileIndexed(filepath))
     {
+        auto entry = getIndexEntry(filepath);
+        if (entry == nullptr)
+        {
+            std::cout << "Failed to retrieve index meta data for " << filepath << std::endl;
+            return;
+        }
         // Not fresh. Update existing index file
     }
     // Add new file into index
@@ -184,6 +197,19 @@ void Plugin::addFile(const std::string filepath)
     }
 }
 
+IndexEntry* Plugin::getIndexEntry(const std::string filepath)
+{
+    readIndex();
+    for (auto it = _index.begin(); it != _index.end(); it++)
+    {
+        if ((*it).filepath == filepath)
+        {
+            return &(*it);
+        }
+    }
+    return nullptr;
+}
+
 void Plugin::writeIndex()
 {
     Poco::FileOutputStream ostr(Plugin::GIT_BIN_INDEX);
@@ -238,20 +264,23 @@ void Plugin::readIndex()
     FileInputStream fstr(f.path());
     std::string buffer;
     Poco::StreamCopier::copyToString(fstr, buffer);
-    StringTokenizer lines(buffer, "\n");
+    StringTokenizer lines(buffer, "\n", StringTokenizer::TOK_TRIM | StringTokenizer::TOK_IGNORE_EMPTY);
     for (auto line = lines.begin(); line != lines.end(); line++)
     {
-        StringTokenizer parts((*line), "<--->");
+        StringTokenizer parts((*line), Plugin::SEPARATOR);
         try 
         {
+            std::cout << "filepath: " << parts[0] << ", md5: " << parts[1] << ", uuid: " << parts[2] << std::endl;
             IndexEntry e;
             e.filepath = parts[0];
             e.md5 = parts[1];
             e.uuid = parts[2];
+            _index.push_back(e);
         } 
-        catch (Poco::Exception e)
+        catch (Poco::RangeException e)
         {
-            
+            std::cout << "ERROR: Cache file is broken" << std::endl;    
+            std::cout << e.displayText() << std::endl;
         }
     }
 }
@@ -385,7 +414,25 @@ int Plugin::replaceWithLink(std::string filepath)
 
 void Plugin::handleStatus(const std::string& name, const std::string& value)
 {
-
+    // Checking status of changed file that is tracked by git-bin
+    
+    readIndex();
+    for (auto it = _index.begin(); it != _index.end(); it++)
+    {
+        std::cout << (*it).filepath.c_str();
+        std::string filepath(Plugin::GIT_CACHE_DIR);
+        filepath.append("/wf/").append((*it).uuid);
+        std::cout << (*it).md5.c_str() << std::endl;
+        std::cout << getFileMd5(filepath) << std::endl;
+        if ((*it).md5 != getFileMd5(filepath))
+        {
+            std::cout << " > Modified" << std::endl;
+        } 
+        else
+        {
+            std::cout << " > Not changed" << std::endl;
+        }
+    }
 }
 
 void Plugin::handleList(const std::string& name, const std::string& value)

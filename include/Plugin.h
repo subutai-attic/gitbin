@@ -102,6 +102,13 @@ typedef enum
     HELP
 } GitAction;
 
+typedef enum
+{
+    NOT_TRACKED,
+    MODIFIED,
+    DELETED
+} FileStatus;
+
 class Plugin : public ServerApplication
 {
     public:
@@ -149,6 +156,7 @@ class Plugin : public ServerApplication
         void writeIndex();
         bool isUuidUnique(const std::string uuid);
         std::string getFileMd5(const std::string filepath) const;
+        IndexEntry* getIndexEntry(const std::string filepath);
     private:
         std::vector<IndexEntry> _index;
         bool _terminate;
