@@ -149,8 +149,9 @@ void Plugin::addFile(const std::string filepath)
     
     Process::Args args;
     args.push_back(filepath);
-    // TODO: Fix filepath
-    args.push_back(e.uuid);
+    std::string origPath(Plugin::GIT_CACHE_DIR);
+    origPath.append("/of/").append(e.uuid);
+    args.push_back(origPath);
     Poco::ProcessHandle copyProcess = Process::launch("cp", args, 0, 0, 0);
     if (copyProcess.wait() != 0)
     {
@@ -160,8 +161,9 @@ void Plugin::addFile(const std::string filepath)
     // Second stage copy
     args.clear();
     args.push_back(filepath);
-    // TODO: Fix filepath
-    args.push_back(e.uuid);
+    std::string workPath(Plugin::GIT_CACHE_DIR);
+    workPath.append("/wf/").append(e.uuid);
+    args.push_back(workPath);
     copyProcess = Process::launch("mv", args, 0, 0, 0);
     if (copyProcess.wait() != 0)
     {
@@ -172,9 +174,8 @@ void Plugin::addFile(const std::string filepath)
     // Make a link
     args.clear();
     args.push_back("-s");
+    args.push_back(workPath);
     args.push_back(filepath);
-    // TODO: Fix filepath
-    args.push_back(e.uuid);
     Poco::ProcessHandle linkProcess = Process::launch("ln", args, 0, 0, 0); 
     if (linkProcess.wait() != 0)
     {
@@ -269,6 +270,8 @@ void Plugin::handleHelp(const std::string& name, const std::string& value)
 
 void Plugin::handleAdd(const std::string& name, const std::string& value)
 {
+    addFile(value);
+    return;
     LogStream lstr(Application::instance().logger());
     lstr.information() << "Checking path" << std::endl;
     if (!hasGitDirectory()) 
@@ -429,6 +432,14 @@ void Plugin::handleInit(const std::string& name, const std::string& value)
     config->save(f.path());
     File dir(Plugin::GIT_CACHE_DIR);
     dir.createDirectory();
+    std::string ofDirPath(Plugin::GIT_CACHE_DIR);
+    ofDirPath.append("/of");
+    File ofDir(ofDirPath);
+    ofDir.createDirectory();
+    std::string wfDirPath(Plugin::GIT_CACHE_DIR);
+    wfDirPath.append("/wf");
+    File wfDir(wfDirPath);
+    wfDir.createDirectory();
 }
 
 void Plugin::handleSync(const std::string& name, const std::string& value)
