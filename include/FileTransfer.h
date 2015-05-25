@@ -1,11 +1,10 @@
 #ifndef __FILE_TRANSFER_H__
 #define __FILE_TRANSFER_H__
 
+#include <iostream>
 #include <Poco/Process.h>
 #include <Poco/Pipe.h>
 #include <Poco/PipeStream.h>
-
-#include "Plugin.h"
 
 using Poco::Process;
 using Poco::ProcessHandle;
@@ -20,7 +19,7 @@ class FileTransfer
         virtual ~FileTransfer();
         virtual void uploadFile(const std::string filepath);
         virtual void downloadFile(const std::string filepath);
-        virtual void setTargetUrl(const std::string targetUrl);
+        void setTargetUrl(const std::string targetUrl);
     protected:
         std::string _targetUrl;
 };

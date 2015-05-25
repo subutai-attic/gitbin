@@ -134,6 +134,7 @@ void Plugin::addFile(const std::string filepath)
     // Find this file in the index
     if (isFileIndexed(filepath))
     {
+        logger().debug("File already in cache");
         auto entry = getIndexEntry(filepath);
         if (entry == nullptr)
         {
@@ -141,6 +142,16 @@ void Plugin::addFile(const std::string filepath)
             return;
         }
         // Not fresh. Update existing index file
+        // Remove file from index before recalculating everything
+        for (auto it = _index.begin(); it != _index.end();) 
+        {
+            if ((*it).filepath == filepath)
+            {
+                it = _index.erase(it); 
+            } else {
+                it++;
+            }
+        } 
     }
     // Add new file into index
     UUIDGenerator gen;
@@ -415,7 +426,12 @@ int Plugin::replaceWithLink(std::string filepath)
 void Plugin::handleStatus(const std::string& name, const std::string& value)
 {
     // Checking status of changed file that is tracked by git-bin
-    
+    File f(Plugin::GIT_CONFIG);
+    if (!f.exists())
+    {
+        logger().error("Git bin has not been initialized");
+        return;
+    } 
     readIndex();
     for (auto it = _index.begin(); it != _index.end(); it++)
     {
@@ -473,10 +489,12 @@ void Plugin::handleInit(const std::string& name, const std::string& value)
         std::cout << uri.getScheme().c_str() << " is unsupported URL." << std::endl;
         return;
     }
+    // Create git-bin configuration file
     f.createFile();
     AutoPtr<PropertyFileConfiguration> config = new PropertyFileConfiguration(); 
     config->setString("url", value);  
     config->save(f.path());
+    // Create git-bin cache directory
     File dir(Plugin::GIT_CACHE_DIR);
     dir.createDirectory();
     std::string ofDirPath(Plugin::GIT_CACHE_DIR);
@@ -487,6 +505,9 @@ void Plugin::handleInit(const std::string& name, const std::string& value)
     wfDirPath.append("/wf");
     File wfDir(wfDirPath);
     wfDir.createDirectory();
+    // Create git-bin index
+    File index(Plugin::GIT_BIN_INDEX);
+    index.createFile();
 }
 
 void Plugin::handleSync(const std::string& name, const std::string& value)
@@ -504,6 +525,8 @@ void Plugin::handleSync(const std::string& name, const std::string& value)
         ft = new S3FileTransfer();
     }
     ft->setTargetUrl(targetUrl);
+    readIndex();
+
 }
 
 int Plugin::main(const std::vector<std::string>& args)
@@ -517,3 +540,8 @@ bool Plugin::hasGitDirectory()
     return f.exists();
 }
 
+std::vector<IndexEntry>* Plugin::getIndex()
+{
+    readIndex();
+    return &_index;
+}

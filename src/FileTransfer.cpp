@@ -1,4 +1,5 @@
 #include "FileTransfer.h"
+#include "Plugin.h"
 
 FileTransfer::FileTransfer()
 {

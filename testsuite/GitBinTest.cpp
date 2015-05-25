@@ -33,60 +33,100 @@ using Poco::FileOutputStream;
 class GitBinTest : public CppUnit::TestFixture
 {
     CPPUNIT_TEST_SUITE(GitBinTest);
-    CPPUNIT_TEST(TestIndexCreate);
-    CPPUNIT_TEST(TestIndexRead);
+    CPPUNIT_TEST(TestInitS3);
+    CPPUNIT_TEST(TestAddNewFile);
+    CPPUNIT_TEST(TestAddModifiedFile);
     CPPUNIT_TEST_SUITE_END();
     public:
     void setUp(void);
     void tearDown(void);
     protected:
-    void TestIndexCreate(void);
-    void TestIndexRead(void);
+    void TestInitS3(void);
+    void TestAddNewFile(void);
+    void TestAddModifiedFile(void);
     private:
     std::vector<std::string> uuids;
 };
 
 void GitBinTest::setUp(void)
 {
-    // Create 100 random files
-    Poco::File f("tests");
-    f.createDirectory();
-    UUIDGenerator gen;
-    for (int i = 0; i < 100; i++)
-    {
-        UUID uuid = gen.createRandom();
-        std::string filename("tests/");
-        filename.append(uuid.toString());
-        FileOutputStream ofstr(filename);
-        ofstr << uuid.toString();
-        uuids.push_back(uuid.toString());
-    }
 }
 
 void GitBinTest::tearDown(void)
 {
-    Poco::File f("tests");
-    f.remove(true);
 }
 
-void GitBinTest::TestIndexCreate(void)
+void GitBinTest::TestInitS3(void)
 {
     Plugin* p = new Plugin();
-    for (auto it = uuids.begin(); it != uuids.end(); it++)
+    p->handleInit("--init", "s3://somepath");
+    std::vector<std::string> files;
+    files.push_back(".git-bin");
+    files.push_back(".git/keshig");
+    files.push_back(".git/bin-cache");
+    for (auto it = files.begin(); it != files.end(); it++)
     {
-        std::string filepath("tests/");
-        p->addFile(filepath.append(*it));
-    }    
+        File f((*it));
+        CPPUNIT_ASSERT(f.exists() == true);
+    }
+    delete p;
 }
 
-void GitBinTest::TestIndexRead(void)
+void GitBinTest::TestAddNewFile(void)
+{
+    File f("test-file");
+    if (!f.exists()) f.createFile();
+    Plugin* p = new Plugin();
+    p->addFile("test-file");
+    auto index = p->getIndex();
+    CPPUNIT_ASSERT(index != nullptr);
+    for (auto it = index->begin(); it != index->end(); it++)
+    {
+        std::cout << "Index entry:" << std::endl;
+        std::cout << "\t\tFilepath: " << (*it).filepath << std::endl;
+        std::cout << "\t\tMD5: " << (*it).md5 << std::endl;
+        std::cout << "\t\tUUID: " << (*it).uuid << std::endl;
+    }
+    delete p;
+}
+
+void GitBinTest::TestAddModifiedFile(void)
 {
 
+}
+
+void TestWorkFlow(void)
+{
+    return;
+    // Remove everything before tests
+    std::vector<std::string> files;
+    files.push_back(".git-bin");
+    files.push_back(".git/keshig");
+    files.push_back(".git/bin-cache");
+    for (auto it = files.begin(); it != files.end(); it++) 
+    {
+        File f((*it));
+        if (f.exists()) f.remove(true);
+    }
+    Process::Args args;
+    args.push_back("bin");
+    args.push_back("--init");
+    args.push_back("s3://somepath");
+    ProcessHandle pr = Process::launch("git", args, 0, 0, 0);
+    CPPUNIT_ASSERT(pr.wait() == 0);
 }
 
 CPPUNIT_TEST_SUITE_REGISTRATION(GitBinTest);
 int main(int argc, char* argv[])
 {
+    File gitdir(".git");
+    bool gitDirCreated = false;
+    if (!gitdir.exists()) 
+    {
+        gitDirCreated = true;
+        gitdir.createDirectory();
+    }
+    // CppUnit
     CPPUNIT_NS::TestResult testResult;
     CPPUNIT_NS::TestResultCollector collectedResults;
     testResult.addListener(&collectedResults);
@@ -97,5 +137,10 @@ int main(int argc, char* argv[])
     testRunner.run(testResult);
     CPPUNIT_NS::CompilerOutputter compilerOutputter(&collectedResults, std::cerr);
     compilerOutputter.write();
+    if (gitDirCreated) 
+    {
+        gitdir.remove(true);
+    }
+    // Clear after tests
     return collectedResults.wasSuccessful() ? 0 : 1;
 }

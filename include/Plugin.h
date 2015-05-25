@@ -160,6 +160,7 @@ class Plugin : public ServerApplication
         bool isUuidUnique(const std::string uuid);
         std::string getFileMd5(const std::string filepath) const;
         IndexEntry* getIndexEntry(const std::string filepath);
+        std::vector<IndexEntry>* getIndex();
     private:
         std::vector<IndexEntry> _index;
         bool _terminate;

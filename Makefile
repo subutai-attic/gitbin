@@ -3,6 +3,7 @@ sinclude config.build
 
 CC = g++
 TARGET = git-bin
+PREFIX = /usr/local/bin
 
 # Directories
 INCLUDE_DIR = include
@@ -40,9 +41,17 @@ clean:
 	@rm -f $(BIN_DIR)/$(TARGET)
 	@rm -f $(BIN_DIR)/$(TARGET)-test
 	@rm -f $(BUILD_DIR)/*.o
+	@rm -f $(BUILD_DIR)/$(TESTS_DIR)/*.o
+
+mrproper:
+	@rm -rf $(BUILD_DIR) 
+	@rm -rf $(BIN_DIR)
 
 install: git-bin
-	@cp $(BIN_DIR)/$(TARGET) /usr/local/bin/
+	@cp $(BIN_DIR)/$(TARGET) $(PREFIX)/
+
+uninstall:
+	@rm -f $(PREFIX)/$(TARGET)
 
 $(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp $(HEADERS)
 	$(CC) -Wall $(CFLAGS) -c $< -o $@
