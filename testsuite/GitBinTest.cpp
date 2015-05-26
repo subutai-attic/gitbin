@@ -92,7 +92,11 @@ void GitBinTest::TestAddNewFile(void)
 
 void GitBinTest::TestAddModifiedFile(void)
 {
-
+    Poco::FileOutputStream ostr("test-file");
+    ostr << "This is a test" << std::endl;
+    Plugin* p = new Plugin();
+    p->addFile("test-file");
+    delete p;
 }
 
 void TestWorkFlow(void)
@@ -139,8 +143,10 @@ int main(int argc, char* argv[])
     compilerOutputter.write();
     if (gitDirCreated) 
     {
-        gitdir.remove(true);
+//        gitdir.remove(true);
     }
+    File index(".git-bin");
+//    index.remove();
     // Clear after tests
     return collectedResults.wasSuccessful() ? 0 : 1;
 }

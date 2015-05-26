@@ -132,7 +132,7 @@ void Plugin::addFile(const std::string filepath)
         index.createFile();
     }
     // Find this file in the index
-    if (isFileIndexed(filepath))
+    if (isFileIndexed(filepath) && file.isLink())
     {
         logger().debug("File already in cache");
         auto entry = getIndexEntry(filepath);
@@ -147,11 +147,22 @@ void Plugin::addFile(const std::string filepath)
         {
             if ((*it).filepath == filepath)
             {
+                // Remove link
+                std::cout << "Replacing link with original file" << std::endl; 
+                file.remove();
+                Process::Args restoreArgs;
+                std::string restorePath(Plugin::GIT_CACHE_DIR);
+                restorePath.append("/wf/");
+                restorePath.append((*it).uuid);
+                restoreArgs.push_back(restorePath);
+                restoreArgs.push_back(filepath);
+                Process::launch("mv", restoreArgs, 0, 0, 0);
                 it = _index.erase(it); 
             } else {
                 it++;
             }
         } 
+
     }
     // Add new file into index
     UUIDGenerator gen;
