@@ -13,7 +13,7 @@ SRC_DIR = src
 BIN_DIR = bin
 
 INCLUDES = -Iinclude -Icommon/include
-LIBS = -g -ggdb -lrt -lPocoFoundation -lPocoUtil
+#LIBS = -g -ggdb -Wl,-Bdynamic -lrt -Llib -Wl,-static -lPocoUtil -lPocoXML -lPocoJSON  -lPocoFoundation  -Wl,-Bdynamic -lpthread
 CFLAGS = -Wno-write-strings $(INCLUDES) $(LIBS) -std=c++11
 SOURCES = $(wildcard $(SRC_DIR)/*.cpp)
 OBJECTS	= $(patsubst %,$(BUILD_DIR)/%.o, $(subst src/,,$(subst .cpp,,$(SOURCES))))
@@ -46,6 +46,8 @@ clean:
 mrproper:
 	@rm -rf $(BUILD_DIR) 
 	@rm -rf $(BIN_DIR)
+	@rm -f config.make
+	@rm -f config.build
 
 install: git-bin
 	@cp $(BIN_DIR)/$(TARGET) $(PREFIX)/

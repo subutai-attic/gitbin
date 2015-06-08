@@ -1,20 +1,3 @@
-/*
- * =====================================================================================
- *
- *       Filename:  Plugin.cpp
- *
- *    Description:  Main Plugin class
- *
- *        Version:  1.0
- *        Created:  05/06/2015 03:06:36 PM
- *       Revision:  none
- *       Compiler:  gcc
- *
- *         Author:  Mikhail Savochkin (msavochkin@critical-factor.com), 
- *
- * =====================================================================================
- */
-
 #include "Plugin.h"
 
 const std::string Plugin::GIT_DIR       = ".git";
@@ -113,6 +96,7 @@ void Plugin::defineOptions(OptionSet& options)
 
 void Plugin::addFile(const std::string filepath)
 {
+    logger().debug("Adding file");
     // Check if file exists and it's not a directory
     File file(filepath);
     if (!file.exists())
@@ -292,7 +276,6 @@ void Plugin::readIndex()
         StringTokenizer parts((*line), Plugin::SEPARATOR);
         try 
         {
-            std::cout << "filepath: " << parts[0] << ", md5: " << parts[1] << ", uuid: " << parts[2] << std::endl;
             IndexEntry e;
             e.filepath = parts[0];
             e.md5 = parts[1];

@@ -46,6 +46,7 @@ class GitBinTest : public CppUnit::TestFixture
     void TestAddModifiedFile(void);
     private:
     std::vector<std::string> uuids;
+    std::string _uuid;
 };
 
 void GitBinTest::setUp(void)
@@ -82,7 +83,7 @@ void GitBinTest::TestAddNewFile(void)
     CPPUNIT_ASSERT(index != nullptr);
     for (auto it = index->begin(); it != index->end(); it++)
     {
-        std::cout << "Index entry:" << std::endl;
+        std::cout << std::endl << "Index entry:" << std::endl;
         std::cout << "\t\tFilepath: " << (*it).filepath << std::endl;
         std::cout << "\t\tMD5: " << (*it).md5 << std::endl;
         std::cout << "\t\tUUID: " << (*it).uuid << std::endl;
@@ -92,11 +93,19 @@ void GitBinTest::TestAddNewFile(void)
 
 void GitBinTest::TestAddModifiedFile(void)
 {
-    Poco::FileOutputStream ostr("test-file");
-    ostr << "This is a test" << std::endl;
     Plugin* p = new Plugin();
-    p->addFile("test-file");
-    delete p;
+    auto index = p->getIndex();
+    for (auto it = index->begin(); it != index->end(); it++)
+    {
+        std::string uuid = (*it).uuid;
+        std::string filepath(Plugin::GIT_CACHE_DIR);
+        filepath.append("/wf/").append(uuid);
+        std::cout << std::endl << filepath << std::endl;
+        Poco::FileOutputStream ostr(filepath);
+        ostr << "This is a test" << std::endl;
+        p->addFile("test-file");
+        delete p;
+    }
 }
 
 void TestWorkFlow(void)
@@ -143,10 +152,16 @@ int main(int argc, char* argv[])
     compilerOutputter.write();
     if (gitDirCreated) 
     {
-//        gitdir.remove(true);
+        gitdir.remove(true);
     }
     File index(".git-bin");
-//    index.remove();
+    if (index.exists())
+        index.remove();
+    // Remove link
+    Process::Args args;
+    args.push_back("-f");
+    args.push_back("test-file");
+    Process::launch("rm", args, 0, 0, 0);
     // Clear after tests
     return collectedResults.wasSuccessful() ? 0 : 1;
 }
