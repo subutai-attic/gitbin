@@ -92,6 +92,13 @@ void Plugin::defineOptions(OptionSet& options)
             .argument("filepath")
             .callback(OptionCallback<Plugin>(
                     this, &Plugin::handleAdd)));
+    
+    options.addOption(
+            Option("sync", "", "syncs files")
+            .required(false)
+            .repeatable(false)
+            .callback(OptionCallback<Plugin>(
+                    this, &Plugin::handleSync)));
 }
 
 void Plugin::addFile(const std::string filepath)
@@ -520,7 +527,17 @@ void Plugin::handleSync(const std::string& name, const std::string& value)
     }
     ft->setTargetUrl(targetUrl);
     readIndex();
-
+    for (auto it = _index.begin(); it != _index.end(); it++)
+    {
+        std::string filepath(Plugin::GIT_CACHE_DIR);
+        filepath.append("/wf/");
+        filepath.append((*it).uuid);
+        File f(filepath);
+        if (f.exists())
+        ft->uploadFile(filepath);
+        else 
+        ft->downloadFile((*it).uuid);
+    }
 }
 
 int Plugin::main(const std::vector<std::string>& args)
