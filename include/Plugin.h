@@ -53,6 +53,7 @@
 
 #include "FileTransfer.h"
 #include "S3FileTransfer.h"
+#include "AWSFileTransfer.h"
 
 using Poco::trim;
 using Poco::Util::ServerApplication;

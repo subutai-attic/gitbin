@@ -523,7 +523,7 @@ void Plugin::handleSync(const std::string& name, const std::string& value)
     } 
     else if (uri.getScheme() == "s3")
     {
-        ft = new S3FileTransfer();
+        ft = new AWSFileTransfer();
     }
     ft->setTargetUrl(targetUrl);
     readIndex();

@@ -10,6 +10,7 @@ class AWSFileTransfer : public FileTransfer
         ~AWSFileTransfer();
         void uploadFile(const std::string filepath);
         void downloadFile(const std::string filepath);
+        static const std::string AWS_TOOL;
 };
 
 #endif
