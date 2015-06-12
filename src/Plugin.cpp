@@ -13,7 +13,7 @@ Plugin::Plugin() : _terminate(false), _action(HELP)
 
 Plugin::~Plugin()
 {
-    
+
 }
 
 void Plugin::initialize(Application& self)
@@ -48,7 +48,7 @@ void Plugin::setupLogger()
 
 void Plugin::defineOptions(OptionSet& options)
 {
-//    ServerApplication::defineOptions(options);
+    //    ServerApplication::defineOptions(options);
     options.addOption(
             Option("help", "h", "display argument help information")
             .required(false)
@@ -63,7 +63,7 @@ void Plugin::defineOptions(OptionSet& options)
             .argument("ssh url")
             .callback(OptionCallback<Plugin>(
                     this, &Plugin::handleInit)));
-    
+
     options.addOption(
             Option("check", "c", "iterates all subdirectories and checks for binary and large files")
             .required(false)
@@ -77,7 +77,7 @@ void Plugin::defineOptions(OptionSet& options)
             .repeatable(false)
             .callback(OptionCallback<Plugin>(
                     this, &Plugin::handleStatus)));
-    
+
     options.addOption(
             Option("list", "l", "lists all files that is tracked by keshig")
             .required(false)
@@ -92,7 +92,7 @@ void Plugin::defineOptions(OptionSet& options)
             .argument("filepath")
             .callback(OptionCallback<Plugin>(
                     this, &Plugin::handleAdd)));
-    
+
     options.addOption(
             Option("sync", "", "syncs files")
             .required(false)
@@ -172,7 +172,7 @@ void Plugin::addFile(const std::string filepath)
     // Place two copies of this file into cache
     // One copy is original file and don't tracked in any way
     // Second copy is a file we will create link to
-    
+
     Process::Args args;
     args.push_back(filepath);
     std::string origPath(Plugin::GIT_CACHE_DIR);
@@ -387,7 +387,7 @@ void Plugin::handleAdd(const std::string& name, const std::string& value)
 int Plugin::replaceWithLink(std::string filepath)
 {
     std::cout << "Replacing with link " << filepath.c_str() << std::endl;
-    
+
     std::ifstream fstr(filepath.c_str());
     MD5Engine md5;
     DigestOutputStream ostr(md5);
@@ -461,7 +461,7 @@ void Plugin::handleStatus(const std::string& name, const std::string& value)
 
 void Plugin::handleList(const std::string& name, const std::string& value)
 {
-    
+
 }
 
 void Plugin::handleCheck(const std::string& name, const std::string& value)
@@ -541,9 +541,21 @@ void Plugin::handleSync(const std::string& name, const std::string& value)
         filepath.append((*it).uuid);
         File f(filepath);
         if (f.exists())
-        ft->uploadFile(filepath);
-        else 
-        ft->downloadFile((*it).uuid);
+        {
+            ft->uploadFile(filepath);
+        } else {
+            ft->downloadFile((*it).uuid);
+            File f((*it).uuid);
+            std::string newPath;
+            newPath.append(Plugin::GIT_CACHE_DIR);
+            newPath.append("/of/");
+            f.copyTo(newPath);
+            newPath.append((*it).uuid);
+            newPath.clear();
+            newPath.append(Plugin::GIT_CACHE_DIR);
+            newPath.append("/wf/");
+            f.moveTo(newPath);
+        }
     }
 }
 
