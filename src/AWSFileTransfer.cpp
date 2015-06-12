@@ -36,6 +36,7 @@ void AWSFileTransfer::downloadFile(const std::string filepath)
     args.push_back("s3");
     args.push_back("cp");
     std::string fullpath(_targetUrl);
+    fullpath.append("/");
     fullpath.append(filepath);
     args.push_back(fullpath);
     args.push_back(filepath);
