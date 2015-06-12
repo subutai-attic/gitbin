@@ -200,7 +200,14 @@ void Plugin::addFile(const std::string filepath)
     // Make a link
     args.clear();
     args.push_back("-s");
-    args.push_back(workPath);
+    Path rel(filepath);
+    std::string relPath;
+    for (int i = 0; i < rel.depth(); i++)
+    {
+        relPath.append("../");
+    }
+    relPath.append(workPath);
+    args.push_back(relPath);
     args.push_back(filepath);
     Poco::ProcessHandle linkProcess = Process::launch("ln", args, 0, 0, 0); 
     if (linkProcess.wait() != 0)

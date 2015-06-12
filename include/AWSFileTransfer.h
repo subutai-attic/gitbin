@@ -2,6 +2,7 @@
 #define __AWS_FILE_TRANSFER_H__
 
 #include "FileTransfer.h"
+#include <Poco/StreamCopier.h>
 
 class AWSFileTransfer : public FileTransfer
 {

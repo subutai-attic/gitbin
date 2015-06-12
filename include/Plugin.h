@@ -1,19 +1,3 @@
-/*
- * =====================================================================================
- *
- *       Filename:  Plugin.h
- *
- *    Description:  Main Plugin class
- *
- *        Version:  1.0
- *        Created:  05/06/2015 03:02:44 PM
- *       Revision:  none
- *       Compiler:  gcc
- *
- *         Author:  Mikhail Savochkin (msavochkin@critical-factor.com), 
- *
- * =====================================================================================
- */
 #ifndef __PLUGIN_H__
 #define __PLUGIN_H__
 
@@ -36,6 +20,7 @@
 #include <Poco/LogStream.h>
 #include <Poco/AutoPtr.h>
 #include <Poco/File.h>
+#include <Poco/Path.h>
 #include <Poco/Util/IntValidator.h>
 #include <Poco/Util/PropertyFileConfiguration.h>
 #include <Poco/Process.h>
@@ -74,6 +59,7 @@ using Poco::AutoPtr;
 using Poco::LogStream;
 using Poco::Util::IntValidator;
 using Poco::File;
+using Poco::Path;
 using Poco::Util::PropertyFileConfiguration;
 using Poco::Process;
 using Poco::Pipe;
