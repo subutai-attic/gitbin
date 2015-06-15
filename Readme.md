@@ -1,12 +1,15 @@
 # git-bin
 git-bin is a plugin for git. git-bin allows you store large and binary files outside of your git repository. Instead of normal files git tracks only symlinks to real files, that can be stored somewhere in the network.
+
 Currently git-bin support the following network storages:
+
 * SSH-based access (git-bin uses scp to transfer files)
 * S3 Bucket (s3cmd or awscli tool are used to transfer files)
 
 ## Building
 
 In order to build git-bin you need to build Poco C++ Libraries first:
+
 * Clone poco from github: git clone https://github.com/pocoproject/poco.git
 * cd poco
 * ./configure --omit=Data/ODBC,Data/MySQL
