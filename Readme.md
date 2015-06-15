@@ -1,4 +1,7 @@
 # git-bin
+
+![git-bin](https://confluence.subutai.io//download/attachments/20709643/GP?version=1&modificationDate=1433925138295&api=v2)
+
 git-bin is a plugin for git. git-bin allows you store large and binary files outside of your git repository. Instead of normal files git tracks only symlinks to real files, that can be stored somewhere in the network.
 
 Currently git-bin support the following network storages:
@@ -19,6 +22,7 @@ In order to build git-bin you need to build Poco C++ Libraries first:
     * If you did a static build you need to create "lib" directory under git-bin project and move *.a file from poco/lib directory into git-bin/lib
 
 Now you need to configure and build git-bin itself:
+
 *  ./configure 
 
     or
