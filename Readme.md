@@ -15,6 +15,7 @@ In order to build git-bin you need to build Poco C++ Libraries first:
 
 * Clone poco from github: git clone https://github.com/pocoproject/poco.git
 * cd poco
+* Install poco dependencies: build-essential, libssl-dev
 * ./configure --omit=Data/ODBC,Data/MySQL
     * If you planning to make a static build (single binary only) you need to configure poco with static libraries support: ./configure --static --omit=Data/ODBC,Data/MySQL
 * make
