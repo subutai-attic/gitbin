@@ -22,7 +22,7 @@ In order to build git-bin you need to build Poco C++ Libraries first:
 * make install 
     * If you did a static build you need to create "lib" directory under git-bin project and move *.a file from poco/lib directory into git-bin/lib
 
-Now you need to configure and build git-bin itself:
+Now you need to configure and build git-bin itself. Note, that git-bin uses cppunit library to run unit tests. If you have no installed cppunit library, than you should append --no-tests flag to configure script
 
 *  ./configure 
 

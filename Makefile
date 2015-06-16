@@ -26,7 +26,7 @@ TEST_OBJECTS += $(subst $(BUILD_DIR)/main.o,,$(OBJECTS))
 .PHONY: all clean
 DEFAULT = all
 
-all: git-bin tests
+all: git-bin $(if $(TESTS),tests)
 git-bin: directories
 git-bin: $(BIN_DIR)/$(TARGET)	
 tests: directories
