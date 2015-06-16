@@ -30,7 +30,7 @@ static=
 if [ "$OS" == "LINUX" ]; then
     libs="-g -ggdb -lrt -lPocoUtil -lPocoXML -lPocoJSON -lPocoFoundation"
 else
-    libs="-g -ggdb -lrt -lPocoUtil -lPocoXML -lPocoJSON -lPocoFoundation"
+    libs="-g -ggdb -lPocoUtil -lPocoXML -lPocoJSON -lPocoFoundation"
 fi
 
 while [ $# -ge 1 ]; do
