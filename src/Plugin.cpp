@@ -215,6 +215,16 @@ void Plugin::addFile(const std::string filepath)
         std::cout << "Failed to create link to file" << std::endl;
         return;
     }
+
+    args.clear();
+    args.push_back("add");
+    args.push_back(filepath);
+    Poco::ProcessHandle gitAddProcess = Process::launch("git", args, 0, 0, 0);
+    if (gitAddProcess.wait() != 0)
+    {
+        std::cout << "Failed to add file into git index (git add)" << std::endl;
+        return;
+    }
 }
 
 IndexEntry* Plugin::getIndexEntry(const std::string filepath)
