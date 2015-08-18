@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 showhelp()
 {
@@ -26,7 +26,7 @@ echo "Configuring for $OS"
 flags="";
 debug=1
 tests="TESTS=1"
-static=
+static=""
 if [ "$OS" == "LINUX" ]; then
     libs="-g -ggdb -lrt -lPocoUtil -lPocoXML -lPocoJSON -lPocoFoundation"
 else
