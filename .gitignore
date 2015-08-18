@@ -4,6 +4,5 @@
 /lib/*
 config.make
 config.build
-CMakeLists.txt
 *.swp
 .git-bin
