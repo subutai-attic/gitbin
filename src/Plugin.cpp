@@ -531,7 +531,7 @@ void Plugin::handleInit(const std::string& name, const std::string& value)
 void Plugin::handleSync(const std::string& name, const std::string& value)
 {
     AutoPtr<PropertyFileConfiguration> config = new PropertyFileConfiguration(Plugin::GIT_CONFIG);
-    std::string targetUrl = config->getString("url");
+    std::string targetUrl = config->getString("url", Plugin::GIT_CACHE_DIR);
     URI uri(targetUrl);
     FileTransfer* ft;
     if (uri.getScheme() == "ssh")
